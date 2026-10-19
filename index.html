@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Context Engineering Course — Interactive Trajectory Visuals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --card-hover-border: #3b82f6;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --badge-bg: rgba(59, 130, 246, 0.15);
+      --badge-text: #60a5fa;
+      --tag-warn-bg: rgba(239, 68, 68, 0.15);
+      --tag-warn-text: #f87171;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 2.5rem 1.25rem;
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 3rem;
+      text-align: center;
+      padding: 2rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      margin-bottom: 1rem;
+      letter-spacing: 0.025em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 2.35rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      margin-bottom: 1rem;
+      color: #ffffff;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin: 0 auto;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+    }
+
+    .module-section {
+      margin-bottom: 3rem;
+    }
+
+    .module-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .module-number {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--badge-bg);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    .module-title {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--card-hover-border);
+      box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1);
+    }
+
+    .card-top {
+      margin-bottom: 1.25rem;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      margin-bottom: 0.75rem;
+      background: var(--tag-warn-bg);
+      color: var(--tag-warn-text);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1rem;
+      border-top: 1px solid var(--card-border);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .card-footer svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover .card-footer svg {
+      transform: translateX(4px);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--card-border);
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="badge">DeepLearning.AI</span>
+      <h1>Context Engineering Course</h1>
+      <p class="subtitle">
+        Interactive turn-by-turn trajectory visuals for course quizzes and case studies. Inspect context window saturation, tool payloads, and context engineering failure modes in real time.
+      </p>
+    </header>
+
+    <main>
+      <!-- Module 1 -->
+      <section class="module-section">
+        <div class="module-header">
+          <span class="module-number">Module 1</span>
+          <h2 class="module-title">Failure Modes in Multi-Turn Agents</h2>
+        </div>
+        <div class="grid">
+          <a class="card" href="Quiz_Visuals/Module_1_Trajectory_1.html">
+            <div class="card-top">
+              <span class="card-tag">Context Poisoning</span>
+              <h3 class="card-title">Trajectory 1: Customer Service Agent</h3>
+              <p class="card-desc">
+                An agent handling shoe size exchanges ingests unindexed, conflicting legacy documentation (30-day cutoff), poisoning its reasoning and wrongly rejecting an eligible request under the 60-day policy.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>Launch Visual App</span>
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </div>
+          </a>
+
+          <a class="card" href="Quiz_Visuals/Module_1_Trajectory_2.html">
+            <div class="card-top">
+              <span class="card-tag">Rapid Saturation</span>
+              <h3 class="card-title">Trajectory 2: Customer Service Agent</h3>
+              <p class="card-desc">
+                Multi-hop logistics queries for regional inventory stock and freight dispatch return large, unpruned payloads, causing explosive context growth and saturating the token budget.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>Launch Visual App</span>
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Module 2 -->
+      <section class="module-section">
+        <div class="module-header">
+          <span class="module-number">Module 2</span>
+          <h2 class="module-title">Agentic Search & Retrieval</h2>
+        </div>
+        <div class="grid">
+          <a class="card" href="Quiz_Visuals/Module_2_Trajectory_1.html">
+            <div class="card-top">
+              <span class="card-tag">Strategy Mismatch</span>
+              <h3 class="card-title">Trajectory 1: FreshCart Coding Agent</h3>
+              <p class="card-desc">
+                The agent attempts to locate exact code constants using pure vector semantic search and policy concepts using keyword search, failing to adapt or recover without hybrid retrieval.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>Launch Visual App</span>
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </div>
+          </a>
+
+          <a class="card" href="Quiz_Visuals/Module_2_Trajectory_2.html">
+            <div class="card-top">
+              <span class="card-tag">Naive Chunking</span>
+              <h3 class="card-title">Trajectory 2: FreshCart Coding Agent</h3>
+              <p class="card-desc">
+                Fixed character-count splitting without language-aware AST parsing splits model validation logic across boundaries, leading to hallucinated data constraints.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>Launch Visual App</span>
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Module 3 -->
+      <section class="module-section">
+        <div class="module-header">
+          <span class="module-number">Module 3</span>
+          <h2 class="module-title">Context Formatting & Compaction</h2>
+        </div>
+        <div class="grid">
+          <a class="card" href="Quiz_Visuals/Module_3_Trajectory_1.html">
+            <div class="card-top">
+              <span class="card-tag">Compaction Erosion</span>
+              <h3 class="card-title">Trajectory 1: Cinema Research Agent</h3>
+              <p class="card-desc">
+                Compacting summaries of summaries across turns progressively strips vital clues (jazz score, European jury award) needed to identify an obscure animated film.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>Launch Visual App</span>
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </div>
+          </a>
+
+          <a class="card" href="Quiz_Visuals/Module_3_Trajectory_2.html">
+            <div class="card-top">
+              <span class="card-tag">Missing Pointer</span>
+              <h3 class="card-title">Trajectory 2: Cinema Research Agent</h3>
+              <p class="card-desc">
+                Externalizing full document bodies to a scratchpad without returning the external document ID pointer strands retrieved records outside the agent's reach.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>Launch Visual App</span>
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Module 4 -->
+      <section class="module-section">
+        <div class="module-header">
+          <span class="module-number">Module 4</span>
+          <h2 class="module-title">Agent Memory & State Persistence</h2>
+        </div>
+        <div class="grid">
+          <a class="card" href="Quiz_Visuals/Module_4_Trajectory_1.html">
+            <div class="card-top">
+              <span class="card-tag">Memory Deduplication</span>
+              <h3 class="card-title">Trajectory 1: Doctor's Appointment Assistant</h3>
+              <p class="card-desc">
+                Demonstrates memory writing pipelines reconciling newly paraphrased patient preferences against long-term vector memory to prevent duplicate rule entries.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>Launch Visual App</span>
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </div>
+          </a>
+
+          <a class="card" href="Quiz_Visuals/Module_4_Trajectory_2.html">
+            <div class="card-top">
+              <span class="card-tag">Forgotten Rules</span>
+              <h3 class="card-title">Trajectory 2: Doctor's Appointment Assistant</h3>
+              <p class="card-desc">
+                A stateless assistant using exact flat-file keyword search fails to equate "Friday" with "end-of-week", forgetting user preferences across sessions.
+              </p>
+            </div>
+            <div class="card-footer">
+              <span>Launch Visual App</span>
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </div>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Context Engineering Course &copy; DeepLearning.AI. All rights reserved.</p>
+      <p style="margin-top: 0.5rem;"><a href="README.md">View Repository README</a></p>
+    </footer>
+  </div>
+</body>
+</html>
