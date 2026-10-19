@@ -295,7 +295,7 @@
     .m1gp-row-label {
       flex: 1;
       min-width: 0;
-      font-size: 13.5px;
+      font-size: 18.5px;
       font-weight: 500;
       color: var(--ink);
       white-space: nowrap;
@@ -304,10 +304,10 @@
     }
 
     .m1gp-badge {
-      font-size: 10px;
+      font-size: 15px;
       font-weight: 700;
       letter-spacing: 0.4px;
-      padding: 2px 8px;
+      padding: 3px 10px;
       border-radius: var(--radius-full);
       flex-shrink: 0;
       text-transform: uppercase;
@@ -325,10 +325,12 @@
     .cat-memory    { background: #84cc16; color: #000000; }
     .cat-hook      { background: #84cc16; color: #000000; }
     .cat-error     { background: #ff0000; color: #ffffff; }
+    .cat-extstore  { background: #b7b7b7; color: #000000; }
+    .cat-default   { background: #b7b7b7; color: #000000; }
 
     .m1gp-tok-delta {
       font-family: var(--mono);
-      font-size: 11.5px;
+      font-size: 16.5px;
       font-weight: 600;
       color: var(--muted);
       flex-shrink: 0;
@@ -379,7 +381,7 @@
       gap: 10px;
       padding: 10px 14px;
       border-radius: var(--radius-md);
-      font-size: 13px;
+      font-size: 18px;
       line-height: 1.45;
       font-weight: 500;
       flex-shrink: 0;
@@ -400,7 +402,7 @@
     }
 
     .m1gp-desc-icon {
-      font-size: 17px;
+      font-size: 22px;
       flex-shrink: 0;
       line-height: 1;
     }
@@ -423,7 +425,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 13px;
+      font-size: 18px;
       font-weight: 600;
       color: #F8FAFC;
     }
@@ -433,7 +435,7 @@
       min-height: 0;
       margin-top: 12px;
       font-family: var(--mono);
-      font-size: 12.5px;
+      font-size: 17.5px;
       line-height: 1.65;
       color: #CBD5E1;
       white-space: pre-wrap;
@@ -540,14 +542,14 @@
         gap: 6px;
       }
       .m1gp-row-label {
-        font-size: 12px;
+        font-size: 17px;
       }
       .m1gp-badge {
-        font-size: 9.5px;
-        padding: 2px 7px;
+        font-size: 14.5px;
+        padding: 3px 9px;
       }
       .m1gp-tok-delta {
-        font-size: 11px;
+        font-size: 16px;
       }
       .m1gp-output-col {
         width: 100% !important;
@@ -619,13 +621,13 @@
         <div class="m1gp-meter-labels">
           <span class="m1gp-meter-title">Context Usage</span>
           <span class="m1gp-meter-stats">
-            <strong id="tokenTotalText">400</strong> <span class="text-slate-400">/ 128K</span>
+            <strong id="tokenTotalText">0</strong> <span class="text-slate-400">/ 128K</span>
           </span>
         </div>
         <div class="m1gp-track">
           <div class="m1gp-fill" id="trackFill"></div>
           <div class="m1gp-ecl-marker"></div>
-          <div class="m1gp-pct-label" id="tokenPctText">0.3%</div>
+          <div class="m1gp-pct-label" id="tokenPctText">0.0%</div>
           <div class="m1gp-ecl-label">Effective context length (102.4K)</div>
         </div>
       </div>
@@ -656,9 +658,9 @@
           <div class="m1gp-detail-head">
             <div class="m1gp-detail-title">
               <i class="ri-terminal-box-line text-cyan-400"></i>
-              <span id="detailBadgeLabel"><span class="m1gp-badge cat-system">SYSTEM PROMPT</span> &middot; Role & Architecture</span>
+              <span id="detailBadgeLabel"><span class="m1gp-badge cat-extstore">EXTERNAL PERSISTENT STORE</span> &middot; Flat-file history record: prior user instruction</span>
             </div>
-            <span class="text-xs text-slate-400 font-mono" id="detailTokens">+400 tokens</span>
+            <span class="text-xs text-slate-400 font-mono" id="detailTokens">+0 tokens</span>
           </div>
           <div class="m1gp-detail-content" id="detailContent">
             Loading...
@@ -681,126 +683,169 @@
     // SOURCE: MODULE_4_TRAJECTORY_2.MD
     // =============================================================================
 
-    const TRAJECTORY_2 = {
+        const TRAJECTORY_2 = {
       name: 'Trajectory 2: Flat-File Search and Forgotten Rules',
       limit: 128000,
       effectiveLength: 102400,
       blocks: [
         {
+          cat: 'extstore',
+          badge: 'EXTERNAL PERSISTENT STORE',
+          label: 'Flat-file history record: prior user instruction',
+          tokens: 0,
+          content: `Patient: "Dismiss all end-of-week appointments"`,
+          desc: `This instruction was stored in the raw flat-file history during a previous session. It is not part of the new session’s active context and is available only if the assistant retrieves it.`,
+          status: 'ok'
+        },
+        {
           cat: 'system',
           badge: 'SYSTEM PROMPT',
-          label: 'Role & Architecture',
+          label: 'Role & architecture',
           tokens: 400,
-          content: `You are an AI Doctor's Appointment Assistant.\n\nRules:\n- Manage incoming patient portal notices.\n- Check the historical flat file for past user instructions using lexical search.\n- If no exact rule is found, ask the user before taking action.`,
-          desc: 'Agent loads correctly but without long-term persistent memory.',
+          content: `You are an AI Doctor's Appointment Assistant.
+
+Rules:
+- Manage incoming patient portal notices.
+- Check the historical flat file for past user instructions using lexical search.
+- If no exact rule is retrieved, ask the user before taking action.`,
+          desc: `The assistant begins a new, stateless session. It has its system instructions and tool definitions, but it does not have prior-session user messages in its active context.`,
           status: 'ok'
         },
         {
           cat: 'tdesc',
           badge: 'SYSTEM PROMPT',
-          label: 'JSON schemas',
+          label: 'Tool definitions: JSON schemas',
           tokens: 250,
-          content: `lexical_search(keyword: string)\n  "Search the raw message history file for exact word matches."\n\ndismiss_notice(notice_id: string)\n  "Dismiss a portal notice from the unread queue."\n\nask_user(question: string)\n  "Ask the patient for clarification if instructions are missing."`,
-          desc: 'Tool schemas registered, including exact-match file search.',
+          content: `lexical_search(keyword: string)
+  "Search the raw message-history file for exact word matches."
+
+dismiss_notice(notice_id: string)
+  "Dismiss a portal notice from the unread queue."
+
+ask_user(question: string)
+  "Ask the patient for clarification if instructions are missing."`,
+          desc: `The available retrieval mechanism supports exact lexical matching only. It does not perform semantic search, synonym matching, or vector retrieval.`,
           status: 'ok'
         },
         {
           cat: 'user',
           badge: 'USER PROMPT',
-          label: 'New notice arrival',
+          label: 'User prompt: New notice arrival',
           tokens: 30,
           content: `Patient: "Notice #882 just arrived for a Friday checkup. Please handle it."`,
-          desc: 'User requests action on a new Friday appointment notice.',
+          desc: `The patient asks the assistant to process a portal notice associated with a Friday appointment.`,
           status: 'ok'
         },
         {
           cat: 'reason',
           badge: 'REASONING TRACE',
-          label: 'Search plan',
-          tokens: 35,
-          content: `I need to handle Notice #882 for a Friday checkup. Since I just booted up and my context is empty, I must search the history file for any rules regarding "Friday".`,
-          desc: 'Model correctly plans to search history for Friday rules.',
-          status: 'ok'
-        },
-        {
-          cat: 'tinput',
-          badge: 'TOOL INPUT',
-          label: 'lexical_search',
-          tokens: 25,
-          content: `{\n  "tool": "lexical_search",\n  "arguments": {\n    "keyword": "Friday"\n  }\n}`,
-          desc: 'Agent executes exact-match search for the keyword Friday.',
-          status: 'ok'
-        },
-        {
-          cat: 'toutput',
-          badge: 'TOOL OUTPUT',
-          label: 'lexical_search',
-          tokens: 20,
-          content: `{\n  "results": "No exact matches found for 'Friday'."\n}`,
-          desc: 'Search failed because the past rule said end-of-week.',
-          status: 'wrong'
-        },
-        {
-          cat: 'reason',
-          badge: 'REASONING TRACE',
-          label: 'Missing rules decision',
-          tokens: 30,
-          content: `No past rules contain the word 'Friday'. Because I lack instructions, I must ask the user how to handle this notice.`,
-          desc: 'Agent assumes no rule exists and prepares to ask.',
-          status: 'wrong'
-        },
-        {
-          cat: 'tinput',
-          badge: 'TOOL INPUT',
-          label: 'ask_user',
-          tokens: 30,
-          content: `{\n  "tool": "ask_user",\n  "arguments": {\n    "question": "I don't have any rules for Friday checkups. Should I dismiss Notice #882?"\n  }\n}`,
-          desc: 'Agent asks the user for instructions unnecessarily.',
-          status: 'wrong'
-        },
-        {
-          cat: 'toutput',
-          badge: 'TOOL OUTPUT',
-          label: 'ask_user (User Reply)',
+          label: 'Reasoning: Search plan',
           tokens: 40,
-          content: `{\n  "user_reply": "I told you yesterday to dismiss all end-of-week visits! Why do I have to repeat myself?"\n}`,
-          desc: 'User becomes annoyed at having to repeat past instructions.',
-          status: 'wrong'
-        },
-        {
-          cat: 'reason',
-          badge: 'REASONING TRACE',
-          label: 'Execution plan',
-          tokens: 30,
-          content: `The user is frustrated. The previous rule used 'end-of-week' instead of 'Friday'. I will dismiss Notice #882 now.`,
-          desc: 'Model understands the missed connection and proceeds correctly.',
+          content: `I need to handle Notice #882 for a Friday checkup. I do not have prior-session instructions in my active context, so I must search the historical flat file for rules related to "Friday".`,
+          desc: `The assistant correctly recognizes that previous-session instructions may exist externally, but are not available in its active context.`,
           status: 'ok'
         },
         {
           cat: 'tinput',
           badge: 'TOOL INPUT',
-          label: 'dismiss_notice',
-          tokens: 30,
-          content: `{\n  "tool": "dismiss_notice",\n  "arguments": {\n    "notice_id": "882"\n  }\n}`,
-          desc: 'Agent calls the tool to dismiss the requested notice.',
+          label: 'Tool call: lexical_search',
+          tokens: 25,
+          content: `{
+  "tool": "lexical_search",
+  "arguments": {
+    "keyword": "Friday"
+  }
+}`,
+          desc: `The assistant searches for the exact keyword “Friday” in the raw message-history file.`,
           status: 'ok'
         },
         {
           cat: 'toutput',
           badge: 'TOOL OUTPUT',
-          label: 'dismiss_notice',
+          label: 'Tool output: lexical_search',
           tokens: 20,
-          content: `{\n  "status": "success",\n  "message": "Notice #882 dismissed."\n}`,
-          desc: 'The portal successfully dismisses the notice as requested.',
+          content: `{
+  "results": "No exact matches found for 'Friday'."
+}`,
+          desc: `The chosen search term produces no exact-match result. The relevant previous instruction exists in the history file, but it uses the different wording “end-of-week.”`,
+          status: 'wrong'
+        },
+        {
+          cat: 'reason',
+          badge: 'REASONING TRACE',
+          label: 'Reasoning: Retrieval failure decision',
+          tokens: 45,
+          content: `My search found no exact-match rule for "Friday". This does not prove that no relevant rule exists, but I have not retrieved an applicable instruction. Following the system rule, I must ask the user before taking action.`,
+          desc: `The assistant distinguishes a failed retrieval query from proof that no relevant instruction exists. It follows the system rule requiring clarification when no applicable rule has been retrieved.`,
+          status: 'wrong'
+        },
+        {
+          cat: 'tinput',
+          badge: 'TOOL INPUT',
+          label: 'Tool call: ask_user',
+          tokens: 35,
+          content: `{
+  "tool": "ask_user",
+  "arguments": {
+    "question": "I could not retrieve an exact-match instruction for this Friday appointment. Should I dismiss Notice #882?"
+  }
+}`,
+          desc: `The assistant asks for clarification because its exact-match retrieval system did not surface the relevant prior instruction.`,
+          status: 'wrong'
+        },
+        {
+          cat: 'toutput',
+          badge: 'TOOL OUTPUT',
+          label: 'Tool output: ask_user (User Reply)',
+          tokens: 45,
+          content: `{
+  "user_reply": "I told you yesterday to dismiss all end-of-week visits, including Friday appointments. Why do I have to repeat myself?"
+}`,
+          desc: `The patient restates both the dismissal rule and the fact that Friday appointments fall within the rule’s scope. This supplies the information that the retrieval system failed to return.`,
+          status: 'wrong'
+        },
+        {
+          cat: 'reason',
+          badge: 'REASONING TRACE',
+          label: 'Reasoning: Execute clarified instruction',
+          tokens: 40,
+          content: `The user has clarified that Friday appointments are included in the instruction to dismiss end-of-week visits. Notice #882 is a Friday appointment, so I can dismiss it.`,
+          desc: `The decision to dismiss the notice is now directly supported by the user’s current-session clarification.`,
+          status: 'ok'
+        },
+        {
+          cat: 'tinput',
+          badge: 'TOOL INPUT',
+          label: 'Tool call: dismiss_notice',
+          tokens: 30,
+          content: `{
+  "tool": "dismiss_notice",
+  "arguments": {
+    "notice_id": "882"
+  }
+}`,
+          desc: `The assistant dismisses the notice after receiving a clear, applicable instruction from the patient.`,
+          status: 'ok'
+        },
+        {
+          cat: 'toutput',
+          badge: 'TOOL OUTPUT',
+          label: 'Tool output: dismiss_notice',
+          tokens: 20,
+          content: `{
+  "status": "success",
+  "message": "Notice #882 dismissed."
+}`,
+          desc: `The patient portal confirms that Notice #882 was dismissed successfully.`,
           status: 'ok'
         },
         {
           cat: 'assistant',
           badge: 'ASSISTANT RESPONSE',
-          label: 'Apology and confirmation',
+          label: 'Assistant response: Confirmation',
           tokens: 40,
-          content: `Assistant: "I have dismissed Notice #882. I apologize for making you repeat yourself; I understand now that Friday counts as an end-of-week visit."`,
-          desc: 'Agent confirms action and concludes the interaction successfully.',
+          content: `Assistant: "Notice #882 has been dismissed. I am sorry you had to restate the instruction; I will apply your clarification that Friday appointments are included in end-of-week visits."`,
+          desc: `The assistant confirms the action and accurately attributes its understanding of Friday’s inclusion to the patient’s current-session clarification.`,
           status: 'ok'
         }
       ]
@@ -821,7 +866,9 @@
       'assistant': '#ff00ff',
       'memory': '#84cc16',
       'hook': '#84cc16',
-      'error': '#ff0000'
+      'error': '#ff0000',
+      'extstore': '#b7b7b7',
+      'default': '#b7b7b7'
     };
 
     function renderExplorer() {
@@ -887,7 +934,7 @@
         seg.className = 'm1gp-seg';
         const segPct = posSum > 0 ? (item.tokens / posSum) * 100 : 0;
         seg.style.width = segPct + '%';
-        seg.style.backgroundColor = CAT_COLORS[item.cat] || '#327EFF';
+        seg.style.backgroundColor = CAT_COLORS[item.cat] || '#b7b7b7';
         const winPct = ((item.tokens / path.limit) * 100).toFixed(1);
         seg.title = `${item.badge} · ${item.label} (+${formatTok(item.tokens)} · ${winPct}% of context)`;
         if (item.visibleIdx === selectedBlockIdx) {
